@@ -49,21 +49,29 @@ word execute_permutation (word input)
     return w.to_ulong();
 }
 
-word spn_cipher (word plain, dword key)
+word spn_cypher (word plain, dword key)
 {
     //creating sub keys
     std::vector<word> keys;
     sub_keys(keys, key);
 
-    word w0 = plain;
-    for (int r = 0; r < keys.size()-1; r++) {
-        word ur = w0 ^ keys[r];
-        word vr = execute_s_box(ur);
-        word wr = execute_permutation(vr);
-        w0 = wr;
+    word wr = plain; // w0
+    word ur,vr;
+
+    for (int r = 0; r < 3; r++) {
+        ur = wr ^ keys[r];
+        vr = execute_s_box(ur);
+        wr = execute_permutation(vr);
     }
-    //return 0;
-    //TODO: this function is unfinished
+
+    //last round does'nt have permutation
+    ur = wr ^ keys[3];
+    vr = execute_s_box(ur);
+
+    word crypt = vr ^ keys[4];
+
+    return crypt;
+    //TODO: Test this function
 }
 
 #endif
