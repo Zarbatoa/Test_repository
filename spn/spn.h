@@ -1,6 +1,7 @@
 #ifndef __SPN_H_
 #define __SPN_H_
 #include <vector>
+#include <bitset>
 
 typedef std::uint_least32_t dword;
 typedef std::uint_least16_t word;
@@ -37,6 +38,17 @@ word execute_s_box (word u)
     return v;
 }
 
+word execute_permutation (word input)
+{
+    std::bitset<16> w;
+    std::bitset<16> v(input);
+
+    for (int i = 0; i < 16; i++)
+        w[16 - permutation_p[i]] = v[15 - i];
+
+    return w.to_ulong();
+}
+
 word spn_cipher (word plain, dword key)
 {
     //creating sub keys
@@ -47,8 +59,11 @@ word spn_cipher (word plain, dword key)
     for (int r = 0; r < keys.size()-1; r++) {
         word ur = w0 ^ keys[r];
         word vr = execute_s_box(ur);
+        word wr = execute_permutation(vr);
+        w0 = wr;
     }
     //return 0;
+    //TODO: this function is unfinished
 }
 
 #endif
